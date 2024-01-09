@@ -1,64 +1,68 @@
-import {useState } from 'react'
-import {ethers } from 'ethers'
-import { create as ipfsHttpClient } from 'ipfs-http-client'
-import { useRouter } from 'next/router'
-import Web3Modal from 'web3modal'
+import { useState } from 'react';
+import { ethers } from 'ethers';
+import { useRouter } from 'next/router';
+import Web3Modal from 'web3modal';
+import pinataSDK from '@pinata/sdk';
 
-const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0');
+const pinata = pinataSDK('f6607b605ac7fcedfdcb', 'f9090577a16641f2bd1caf0d061674482460e72434990794497c0a9db8938c07');
 
 import {
-    nftaddress,nftmarketaddress
-} from '../config';
-import NFT from '../artifacts/contracts/NFT.sol/NFT.json';
-import Market from '../artifacts/contracts/NFTMarket.sol/NFTMarket.json';
-import { EtherscanProvider } from '@ethersproject/providers'
-import Image from 'next/Image'
-
+  nftaddress, nftmarketaddress
+} from '../config';a
+import NFT from '../contracts/nftMint.json';
+import Market from '../contracts/NFTworld.json';
+import { EtherscanProvider } from '@ethersproject/providers';
+import Image from 'next/Image';
 
 export default function CreateItem() {
-    const [fileUrl, setFileUrl] = useState(null)
-    const [formInput, updateFormInput] = useState({price: '', name: '', description:''})
-    const router = useRouter();
+  const [fileUrl, setFileUrl] = useState(null);
+  const [formInput, updateFormInput] = useState({ price: '', name: '', description: '' });
+  const router = useRouter();
 
-    async function onChange(e) {
-        const file = e.target.files[0]
-        try{ //try uploading the file
-            const added = await client.add(
-                file,
-                {
-                    progress: (prog) => console.log(`received: ${prog}`)
-                }
-            )
-            //file saved in the url path below
-            const url = `https://ipfs.infura.io/ipfs/${added.path}`
-            setFileUrl(url)
-        }catch(e){
-            console.log('Error uploading file: ', e)
-        }
+  async function onChange(e) {
+    const file = e.target.files[0];
+    try {
+      const data = new FormData();
+      data.append('file', file);
+
+      const result = await pinata.pinFileToIPFS(data, {
+        pinataOptions: { cidVersion: 0 }
+      });
+
+      const url = `https://gateway.pinata.cloud/ipfs/${result.IpfsHash}`;
+      setFileUrl(url);
+    } catch (e) {
+      console.error(e);
     }
+  }
 
     //1. create item (image/video) and upload to ipfs
-    async function createItem(){
-        const {name, description, price} = formInput; //get the value from the form input
-        
+    async function createItem() {
+        const { name, description, price } = formInput; //get the value from the form input
+      
         //form validation
-        if(!name || !description || !price || !fileUrl) {
-            return
+        if (!name || !description || !price || !fileUrl) {
+          return;
         }
-
+      
         const data = JSON.stringify({
-            name, description, image: fileUrl
+          name,
+          description,
+          image: fileUrl,
         });
-
-        try{
-            const added = await client.add(data)
-            const url = `https://ipfs.infura.io/ipfs/${added.path}`
-            //pass the url to sav eit on Polygon adter it has been uploaded to IPFS
-            createSale(url)
-        }catch(error){
-            console.log(`Error uploading file: `, error)
+      
+        try {
+          const added = await pinata.pinJSONToIPFS(JSON.parse(data), {
+            pinataOptions: { cidVersion: 0 },
+          });
+      
+          const url = `https://gateway.pinata.cloud/ipfs/${added.IpfsHash}`;
+          //pass the url to save it on Polygon after it has been uploaded to IPFS
+          createSale(url);
+        } catch (error) {
+          console.log(`Error uploading file: `, error);
         }
-    }
+      }
 
     //2. List item for sale
     async function createSale(url){
@@ -141,7 +145,7 @@ export default function CreateItem() {
                     }
                     <button onClick={createItem}
                      className="font-bold mt-4 bg-pink-500 text-white rounded p-4 shadow-lg"
-                     >Create NFT</button>
+                     >mint NFT</button>
             </div>
         </div>
     )
