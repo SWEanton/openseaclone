@@ -1,15 +1,15 @@
-import pinataSDK from '@pinata/sdk';
+import { ThirdwebStorage } from "@thirdweb-dev/storage";
 
-const pinata = pinataSDK('f6607b605ac7fcedfdcb', 'f9090577a16641f2bd1caf0d061674482460e72434990794497c0a9db8938c07');
+const storage = new ThirdwebStorage({
+  secretKey: "e3-9unQnRVFFvpJv_IZi75j8x8cJpw1-VAYESj9ePP3sGPtLpMAmH_cOPkH8rrXeMqsAnOO5LLi4MQG_ywxvNg", // Replace with your secret key
+});
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
     const data = req.body;
     try {
-      const result = await pinata.pinFileToIPFS(data, {
-        pinataOptions: { cidVersion: 0 }
-      });
-      const url = `https://gateway.pinata.cloud/ipfs/${result.IpfsHash}`;
+      const uri = await storage.upload(data);
+      const url = await storage.resolveScheme(uri);
       res.status(200).json({ url });
     } catch (e) {
       res.status(500).json({ error: 'Error uploading to IPFS' });

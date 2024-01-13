@@ -82,3 +82,4 @@ export async function getNFTs() {
 // }
 
 // export default YourComponent;
+  }
