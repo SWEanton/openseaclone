@@ -2,17 +2,13 @@ import { useState } from 'react';
 import { ethers } from 'ethers';
 import { useRouter } from 'next/router';
 import Web3Modal from 'web3modal';
-import pinataSDK from '@pinata/sdk';
-
-const pinata = pinataSDK('f6607b605ac7fcedfdcb', 'f9090577a16641f2bd1caf0d061674482460e72434990794497c0a9db8938c07');
 
 import {
   nftaddress, nftmarketaddress
-} from '../config';a
+} from '../config';
 import NFT from '../contracts/nftMint.json';
 import Market from '../contracts/NFTworld.json';
-import { EtherscanProvider } from '@ethersproject/providers';
-import Image from 'next/Image';
+import Image from 'next/image';
 
 export default function CreateItem() {
   const [fileUrl, setFileUrl] = useState(null);
@@ -21,132 +17,120 @@ export default function CreateItem() {
 
   async function onChange(e) {
     const file = e.target.files[0];
-    try {
-      const data = new FormData();
-      data.append('file', file);
+    const data = new FormData();
+    data.append('file', file);
 
-      const result = await pinata.pinFileToIPFS(data, {
-        pinataOptions: { cidVersion: 0 }
-      });
+    const response = await fetch('/api/ipfs', {
+      method: 'POST',
+      body: data
+    });
 
-      const url = `https://gateway.pinata.cloud/ipfs/${result.IpfsHash}`;
+    if (response.ok) {
+      const { url } = await response.json();
       setFileUrl(url);
-    } catch (e) {
-      console.error(e);
+    } else {
+      console.error('Error uploading file');
     }
   }
 
-    //1. create item (image/video) and upload to ipfs
-    async function createItem() {
-        const { name, description, price } = formInput; //get the value from the form input
-      
-        //form validation
-        if (!name || !description || !price || !fileUrl) {
-          return;
-        }
-      
-        const data = JSON.stringify({
-          name,
-          description,
-          image: fileUrl,
-        });
-      
-        try {
-          const added = await pinata.pinJSONToIPFS(JSON.parse(data), {
-            pinataOptions: { cidVersion: 0 },
-          });
-      
-          const url = `https://gateway.pinata.cloud/ipfs/${added.IpfsHash}`;
-          //pass the url to save it on Polygon after it has been uploaded to IPFS
-          createSale(url);
-        } catch (error) {
-          console.log(`Error uploading file: `, error);
-        }
-      }
-
-    //2. List item for sale
-    async function createSale(url){
-        const web3Modal = new Web3Modal();
-        const connection = await web3Modal.connect();
-        const provider = new ethers.providers.Web3Provider(connection);
-
-        //sign the transaction
-        const signer = provider.getSigner();
-        let contract = new ethers.Contract(nftaddress, NFT.abi, signer);
-        let transaction = await contract.createToken(url);
-        let tx = await transaction.wait()
-
-        //get the tokenId from the transaction that occured above
-        //there events array that is returned, the first item from that event
-        //is the event, third item is the token id.
-        console.log('Transaction: ',tx)
-        console.log('Transaction events: ',tx.events[0])
-        let event = tx.events[0]
-        let value = event.args[2]
-        let tokenId = value.toNumber() //we need to convert it a number
-
-        //get a reference to the price entered in the form 
-        const price = ethers.utils.parseUnits(formInput.price, 'ether')
-
-        contract = new ethers.Contract(nftmarketaddress, Market.abi, signer);
-
-        //get the listing price
-        let listingPrice = await contract.getListingPrice()
-        listingPrice = listingPrice.toString()
-
-        transaction = await contract.createMarketItem(
-            nftaddress, tokenId, price, {value: listingPrice }
-        )
-
-        await transaction.wait()
-
-        router.push('/')
-
+  async function createItem() {
+    const { name, description, price } = formInput;
+    if (!name || !description || !price || !fileUrl) {
+      return;
     }
 
-    return (
-        <div className="flex justify-center">
-            <div className="w-1/2 flex flex-col pb-12">
-                <input 
-                    placeholder="Asset Name"
-                    className="mt-8 border rounded p-4"
-                    onChange={e => updateFormInput({...formInput, name: e.target.value})}
-                    />
-                <textarea
-                     placeholder="Asset description"
-                     className="mt-2 border rounded p-4"
-                     onChange={e => updateFormInput({...formInput, description: e.target.value})}
-                     />
-                <input 
-                    placeholder="Asset Price in Eth"
-                    className="mt-8 border rounded p-4"
-                    type="number"
-                    onChange={e => updateFormInput({...formInput, price: e.target.value})}
-                    />
-                    <input
-                        type="file"
-                        name="Asset"
-                        className="my-4"
-                        onChange={onChange}
-                    />
-                    {
-                        fileUrl && (
-                           
-                            <Image
-                            src={fileUrl}
-                            alt="Picture of the author"
-                            className="rounded mt-4"
-                            width={350}
-                            height={500} 
-                            // blurDataURL="data:..." automatically provided
-                            // placeholder="blur" // Optional blur-up while loading
-                          />
-                        )
-                    }
-                    <button onClick={createItem}
-                     className="font-bold mt-4 bg-pink-500 text-white rounded p-4 shadow-lg"
-                     >mint NFT</button>
-            </div>
-        </div>
+    const data = JSON.stringify({
+      name,
+      description,
+      image: fileUrl,
+    });
+
+    const response = await fetch('/api/ipfs', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: data
+    });
+
+    if (response.ok) {
+      const { url } = await response.json();
+      createSale(url);
+    } else {
+      console.error('Error uploading file');
+    }
+  }
+
+  async function createSale(url){
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+
+    const signer = provider.getSigner();
+    let contract = new ethers.Contract(nftaddress, NFT.abi, signer);
+    let transaction = await contract.createToken(url);
+    let tx = await transaction.wait()
+
+    let event = tx.events[0]
+    let value = event.args[2]
+    let tokenId = value.toNumber()
+
+    const price = ethers.utils.parseUnits(formInput.price, 'ether')
+
+    contract = new ethers.Contract(nftmarketaddress, Market.abi, signer);
+
+    let listingPrice = await contract.getListingPrice()
+    listingPrice = listingPrice.toString()
+
+    transaction = await contract.createMarketItem(
+        nftaddress, tokenId, price, {value: listingPrice }
     )
+
+    await transaction.wait()
+
+    router.push('/')
+  }
+
+  return (
+    <div className="flex justify-center">
+      <div className="w-1/2 flex flex-col pb-12">
+        <input 
+          placeholder="Asset Name"
+          className="mt-8 border rounded p-4"
+          onChange={e => updateFormInput({...formInput, name: e.target.value})}
+        />
+        <textarea
+          placeholder="Asset description"
+          className="mt-2 border rounded p-4"
+          onChange={e => updateFormInput({...formInput, description: e.target.value})}
+        />
+        <input 
+          placeholder="Asset Price in Eth"
+          className="mt-8 border rounded p-4"
+          type="number"
+          onChange={e => updateFormInput({...formInput, price: e.target.value})}
+        />
+        <input
+          type="file"
+          name="Asset"
+          className="my-4"
+          onChange={onChange}
+        />
+        {
+          fileUrl && (
+            <Image
+              src={fileUrl}
+              alt="NFT preview"
+              className="rounded mt-4"
+              width={350}
+              height={500}
+            />
+          )
+        }
+        <button onClick={createItem}
+          className="font-bold mt-4 bg-pink-500 text-white rounded p-4 shadow-lg"
+        >Mint NFT</button>
+      </div>
+    </div>
+  )
 }

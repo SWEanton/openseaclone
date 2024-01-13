@@ -21,7 +21,7 @@ export async function createToken(url) {
   return tokenId;
 }
 
-// Add this to your contractintegration.js file
+
 
 export async function getNFTs() {
     const web3Modal = new Web3Modal();
