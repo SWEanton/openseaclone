@@ -1,12 +1,14 @@
 import '../styles/globals.css'
 import Link from 'next/link'
-import { ThirdwebProvider, metamaskWallet } from "@thirdweb-dev/react";
+import { ThirdwebProvider, metamaskWallet, useWallet } from "@thirdweb-dev/react";
 import { ConnectWallet } from "@thirdweb-dev/react";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk";
+import { useWallet } from "@thirdweb/hooks";
 
 const activeChain = "mumbai";
 
 function MyApp({ Component, pageProps }) {
+  const { wallet } = useWallet();
   return (
     <ThirdwebProvider activeChain={activeChain}
     clientId="d435882a4a6a9827818d3671a163f6b3"
