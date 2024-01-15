@@ -34,8 +34,8 @@ function MyApp({ Component, pageProps }) {
         <div className="relative z-10">
           <nav className="border-b p-6">
             <p className="text-4xl font-bold"> NFT Marketplace </p>
-            <div className="flex mt-4 justify-between">
-              <div classname="flex space-x-4">
+            <div className="text-xl flex mt-4 justify-between">
+              <div className="flex space-x-8">
                 <Link href="/" passHref>
                   Home
                 </Link>

@@ -48,7 +48,7 @@ export default function CreateItem() {
             image: fileUrl,
           };
 
-          await contract.call("mintTo", ["0x238064c094A9970e797629fF839f4B4f97E5476a", metadata]);
+          await contract.call("mintTo", ["0x6c25971cd92459AF4dB23184f97e4578DfE90F88", metadata]);
           router.push('/');
         }}
       >
