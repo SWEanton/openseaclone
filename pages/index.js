@@ -1,110 +1,45 @@
-import {ethers} from 'ethers';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
-import Web3Modal from "web3modal"
-import { nftaddress, nftmarketaddress } from '../config';
-import NFT from '../contracts/nftMint.json';
-import Market from '../contracts/NFTworld.json';
-import Image from 'next/image'
+import { useContract, ThirdwebNftMedia } from "@thirdweb-dev/react";
 
-export default function Home() {
+function Home() {
+  const { contract } = useContract(
+    "0xd17D48b8F7B99e22e6ebE614bbF0e37c13a89391",
+    "NFTmint"
+  );
   const [nfts, setNfts] = useState([]);
-  const [loadingState, setLoadingState] = useState('not-loaded');
 
-  useEffect(()=>{
-    // loadNFTs();
+  useEffect(() => {
+    if (contract) {
+      contract.erc721.getAll().then(setNfts);
+    }
+  }, [contract]);
 
-  }, []);
+  const truncateAddress = (address) => {
+    return (
+      address.substring(0, 6) + "..." + address.substring(address.length - 4)
+    );
+  };
 
-  async function loadNFTs(){
-    const provider = new ethers.providers.JsonRpcProvider("https://polygon-mumbai.infura.io/v3/1c3653e017cd46658228c13805b90a04");
-    const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider);
-    const marketContract = new ethers.Contract(nftmarketaddress, Market.abi, provider);
-
-    //return an array of unsold market items
-    const data = await marketContract.fetchMarketItems();
-
-    const items = await Promise.all(data.map(async i => {
-       const tokenUri = await tokenContract.tokenURI(i.tokenId);
-       const meta = await axios.get(tokenUri);
-       let price = ethers.utils.formatUnits(i.price.toString(), 'ether')
-       let item = {
-         price,
-         tokenId: i.tokenId.toNumber(),
-         seller: i.seller,
-         owner: i.owner,
-         image: meta.data.image,
-         name: meta.data.name,
-         description: meta.data.description,
-       }
-       return item;
-    }));
-
-    setNfts(items);
-    setLoadingState('loaded')
-  }
-
-  async function buyNFT(nft){
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.providers.Web3Provider(connection);
-
-    //sign the transaction
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(nftmarketaddress, Market.abi, signer);
-
-    //set the price
-    const price = ethers.utils.parseUnits(nft.price.toString(), 'ether');
-
-    //make the sale
-    const transaction = await contract.createMarketSale(nftaddress, nft.tokenId, {
-      value: price
-    });
-    await transaction.wait();
-
-    loadNFTs()
-  }
-
-  if(loadingState === 'loaded' && !nfts.length) return (
-    <h1 className="px-20 py-10 text-3xl">No items in market place</h1>
-  )
+  const handleViewOnOpensea = (nft) => {
+    window.open(`https://testnets.opensea.io/assets/${nft.metadata.address}/${nft.metadata.id}`);
+  };
 
   return (
-   <div className="flex justify-center">
-     <div className="px-4" style={{ maxWidth: '1600px'}}>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
-        {
-          nfts.map((nft, i) =>(
-            <div key={i} className="border shadow rounded-xl overflow-hidden">
-             
-              <Image
-                  src={nft.image}
-                  alt="Picture of the author"
-                  width={500}
-                  height={500}
-                  // blurDataURL="data:..." automatically provided
-                  // placeholder="blur" // Optional blur-up while loading
-                />
-                        <div className="p-4">
-                <p style={{ height: '64px'}} className="text-2xl font-semibold">
-                  {nft.name}
-                </p>
-                <div style={{ height: '70px', overflow: 'hidden'}}>
-                  <p className="text-gray-400">{nft.description}</p>
-                </div>
-              </div>
-              <div className="p-4 bg-black">
-                <p className="text-2xl mb-4 font-bold text-white">
-                  {nft.price} ETH
-                </p>
-                <button className="w-full bg-pink-500 text-white font-bold py-2 px-12 rounded"
-                onClick={() => buyNFT(nft)}>Buy NFT</button>
+    <div style={{ border: '4px solid black',  padding: '10px', width: '100%' }}>
+      {nfts && nfts?.length > 0 && (
+        <div>
+          {nfts.map((nft) => (
+            <div key={nft.metadata.id.toString()}>
+              <h1>{nft.metadata.name}</h1>
+              <ThirdwebNftMedia metadata={nft.metadata} />
+              <p>owned by {truncateAddress(nft.owner)} (logged in user) </p>
+              <button onClick={() => handleViewOnOpensea(nft)}>View on opensea</button>
             </div>
-            </div>
-          ))
-        }
-      </div>
-     </div>
-   </div>
-  )
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
+
+export default Home;

@@ -6,12 +6,13 @@ import {
   nftaddress
 } from '../config';
 
+const activeChain = "mumbai";
+
 export default function CreateItem() {
   const [fileUrl, setFileUrl] = useState(null);
   const [formInput, updateFormInput] = useState({ price: '', name: '', description: '' });
   const router = useRouter();
   const { contract } = useContract(nftaddress);
-  const activeChain = "mumbai";
   async function onChange(e) {
     const file = e.target.files[0];
     const data = new FormData();
