@@ -67,7 +67,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
       const response = await engine.erc721.mintTo(
         "mumbai",
-        NFT_COLLECTION_CONTRACT_ADDRESS,
+        "0xd17D48b8F7B99e22e6ebE614bbF0e37c13a89391",
         TW_BACKEND_WALLET,
         {
           receiver: address,

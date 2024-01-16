@@ -21,7 +21,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "const/yourDetails.ts"  ],
   "exclude": [
     "node_modules"
   ]

@@ -23,6 +23,7 @@ function MyApp({ Component, pageProps }) {
       ]}
     
     >
+ 
       <div className="bakgrundsvideo">
       <video
   autoPlay
@@ -49,7 +50,7 @@ function MyApp({ Component, pageProps }) {
                   My NFTs
                 </Link>
                 <Link href="/creator-dashboard" passHref>
-                  Dashboard
+                  NFT Creator 
                 </Link>
               </div>
               <ConnectWallet />
