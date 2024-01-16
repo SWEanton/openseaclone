@@ -41,13 +41,13 @@ function MyApp({ Component, pageProps }) {
             <div className="text-xl flex mt-4 justify-between">
               <div className="flex space-x-8">
                 <Link href="/" passHref>
-                  Home
+                  My NFTs
                 </Link>
                 <Link href="/create-item" passHref>
-                  Create
+                  Signature Mint
                 </Link>
                 <Link href="/my-assets" passHref>
-                  My NFTs
+                  Burn NFTs
                 </Link>
                 <Link href="/creator-dashboard" passHref>
                   NFT Creator 

@@ -11,7 +11,7 @@ export const config = {
   },
 };
 
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+const handler =  async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed, please use POST" });
   }
@@ -67,7 +67,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
       const response = await engine.erc721.mintTo(
         "mumbai",
-        "0xd17D48b8F7B99e22e6ebE614bbF0e37c13a89391",
+        NFT_COLLECTION_CONTRACT_ADDRESS,
         TW_BACKEND_WALLET,
         {
           receiver: address,
