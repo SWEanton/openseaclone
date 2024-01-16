@@ -1,81 +1,52 @@
-import { ethers } from 'ethers'
-import { useEffect, useState } from 'react'
-import axios from 'axios'
-import Web3Modal from "web3modal"
-import Image from 'next/image'
-
 import {
-  nftmarketaddress, nftaddress
-} from '../config'
+  ConnectWallet,
+  Web3Button,
+  useAddress,
+  useContract,
+} from "@thirdweb-dev/react";
+import styles from "../styles/Home.module.css";
+import { NFT_COLLECTION_ADDRESS } from "../const/yourDetails";
+import { useState } from "react";
 
-import NFT from '../contracts/nftMint.json';
-import Market from '../contracts/NFTworld.json';
+export default function Home() {
+  const address = useAddress();
+  const { contract, isLoading } = useContract(NFT_COLLECTION_ADDRESS);
+  const [loading, setLoading] = useState(false);
 
-export default function MyAssets() {
-  const [nfts, setNfts] = useState([])
-  const [loadingState, setLoadingState] = useState('not-loaded')
-
-  useEffect(() => {
-    loadNFTs()
-  }, [])
-
-  async function loadNFTs() {
-    // const web3Modal = new Web3Modal({
-    //   network: "mainnet",
-    //   cacheProvider: true,
-    // })
-    const web3Modal = new Web3Modal()
-    const connection = await web3Modal.connect()
-    const provider = new ethers.providers.Web3Provider(connection)
-    const signer = provider.getSigner()
-      
-    const marketContract = new ethers.Contract(nftmarketaddress, Market.abi, signer)
-    const tokenContract = new ethers.Contract(nftaddress, NFT.abi, provider)
-    const data = await marketContract.fetchMyNFTs()
-    
-    const items = await Promise.all(data.map(async i => {
-      const tokenUri = await tokenContract.tokenURI(i.tokenId)
-      const meta = await axios.get(tokenUri)
-      let price = ethers.utils.formatUnits(i.price.toString(), 'ether')
-      let item = {
-        price,
-        tokenId: i.tokenId.toNumber(),
-        seller: i.seller,
-        owner: i.owner,
-        image: meta.data.image,
+  const validateAndMint = async () => {
+    try {
+      if (!address || isLoading) return;
+      setLoading(true);
+      // Contact API to check eligibility and get signature
+      const response = await fetch("/api/requestMint", {
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setLoading(false);
+        return alert("You are unable to mint at this time.");
       }
-      return item
-    }))
-    setNfts(items)
-    setLoadingState('loaded') 
-  }
-  if (loadingState === 'loaded' && !nfts.length) return (<h1 className="py-10 px-20 text-3xl">No assets owned</h1>)
-  return (
-    <div className="flex justify-center">
-      <div className="p-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
-          {
-            nfts.map((nft, i) => (
-              <div key={i} className="border shadow rounded-xl overflow-hidden">
-         
+      // Mint NFT
+      await contract.erc721.signature.mint(data.signature);
+      setLoading(false);
+      alert("NFT minted!");
+    } catch (error) {
+      console.error(error);
+      setLoading(false);
+      alert(
+        "Something went wrong. Please check the console for more information."
+      );
+    }
+  };
 
-                <Image
-                            src={nft.image}
-                            alt="Picture of the author"
-                            className="rounded"
-                            width={350}
-                            height={500} 
-                            // blurDataURL="data:..." automatically provided
-                            // placeholder="blur" // Optional blur-up while loading
-                          />
-                <div className="p-4 bg-black">
-                  <p className="text-2xl font-bold text-white">Price - {nft.price} ETH</p>
-                </div>
-              </div>
-            ))
-          }
-        </div>
-      </div>
+  return (
+    <div className="container">
+      <ConnectWallet />
+      {address && (
+        <button disabled={loading} className="button" onClick={validateAndMint}>
+          {loading ? "Loading..." : "Validate and mint!"}
+        </button>
+      )}
     </div>
-  )
+  );
 }

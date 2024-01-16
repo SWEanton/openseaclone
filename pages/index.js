@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useContract, ThirdwebNftMedia } from "@thirdweb-dev/react";
+import { useRouter } from 'next/router';
 import React from 'react';
 function Home() {
   const { contract } = useContract(

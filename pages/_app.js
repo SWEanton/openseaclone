@@ -3,22 +3,25 @@ import Link from 'next/link'
 import { ThirdwebProvider, metamaskWallet, useWallet } from "@thirdweb-dev/react";
 import { ConnectWallet } from "@thirdweb-dev/react";
 import { ThirdwebSDK } from '@thirdweb-dev/sdk';
-
+import { ACTIVE_CHAIN } from '../const/yourDetails';
+import { ethers } from 'ethers';
 const sdk = new ThirdwebSDK ("mumbai", {
   clientId : "d435882a4a6a9827818d3671a163f6b3",
 });
 
-const activeChain = "mumbai";
+
 
 function MyApp({ Component, pageProps }) {
   return (
-    <ThirdwebProvider activeChain={activeChain}
+    <ThirdwebProvider activeChain={ACTIVE_CHAIN}
+    authConfig={{ domain: "example.com", authUrl: "/api/auth" }}
     clientId="d435882a4a6a9827818d3671a163f6b3"
-      supportedWallets={[
+    supportedWallets={[
         metamaskWallet({
           recommended: true,
         }),
       ]}
+    
     >
       <div className="bakgrundsvideo">
       <video
@@ -54,7 +57,7 @@ function MyApp({ Component, pageProps }) {
           </nav> 
           <Component {...pageProps} />
         </div>
-      
+
     </ThirdwebProvider>
   )
 }

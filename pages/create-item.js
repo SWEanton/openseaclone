@@ -32,7 +32,7 @@ export default function CreateItem() {
   }
 
   return (
-    <>
+    <><div>
       <Web3Button 
         contractAddress={nftaddress}
         activeChain={activeChain}
@@ -79,6 +79,7 @@ export default function CreateItem() {
             onChange={onChange}
           />
         </div>
+      </div>
       </div>
     </>
   );
