@@ -1,39 +1,15 @@
-import { ethers } from 'ethers'
-import { useEffect, useState } from 'react'
-import axios from 'axios'
-import Web3Modal from "web3modal"
-import Image from 'next/image'
+import { useContract } from "@thirdweb-dev/react";
 
-import {
-  nftmarketaddress, nftaddress
-} from '../config'
+export default function Component() {
+    const { contract, mutate: burnNFT, isLoading, error } = useContract("0xd17D48b8F7B99e22e6ebE614bbF0e37c13a89391");
 
-export function Navbar() {
-  const address = useAddress();
+    if (error) {
+        console.error("failed to burn NFT", error);
+    }
 
-  return (
-      <div>
-          <div>
-              <Link href='/'>
-                  <p>Marketplace</p>
-              </Link>
-              <div>
-                  <Link href='/buy'>
-                      <p>Buy</p>
-                  </Link>
-                  <Link href='/sell'>
-                      <p>Sell</p>
-                  </Link>
-              </div>
-              <div>
-                  <ConnectWallet/>
-                  {address && (
-                      <Link href={`/profile/${address}`}>
-                          {/* Image of avatar */}
-                      </Link>
-                  )}
-              </div>
-          </div>
-      </div>
-  )
-};
+    return (
+        <button style={{ border: "3px solid black" }} disabled={isLoading} onClick={() => burnNFT({ tokenId: 0, amount: 1 })}>
+            {"Burn NFT"}
+        </button>
+    );
+}

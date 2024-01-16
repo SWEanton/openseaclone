@@ -1,6 +1,6 @@
 import '../styles/globals.css'
 import Link from 'next/link'
-import { ThirdwebProvider, metamaskWallet, useWallet } from "@thirdweb-dev/react";
+import { ThirdwebProvider, metamaskWallet, useContract } from "@thirdweb-dev/react";
 import { ConnectWallet } from "@thirdweb-dev/react";
 import { ThirdwebSDK } from '@thirdweb-dev/sdk';
 import { ACTIVE_CHAIN } from '../const/yourDetails';
@@ -61,5 +61,7 @@ function MyApp({ Component, pageProps }) {
     </ThirdwebProvider>
   )
 }
-
+function Component() {
+  const { contract, isLoading } = useContract("0xd17D48b8F7B99e22e6ebE614bbF0e37c13a89391");
+}
 export default MyApp
