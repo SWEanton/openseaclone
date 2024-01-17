@@ -12,7 +12,7 @@ body {
 }
 
 a {
-  color: #84309c;
+  color: #bb92c6;
   text-decoration: none;
 }
 
@@ -23,4 +23,20 @@ a {
 body {
   color: #e7e8e8;
   background: #070707;
+}
+
+header {
+  background: #1c0101;
+  padding: 0.1px;
+  text-align: center;
+}
+.nft-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px; /* Adjust the value as needed */
+}
+
+.nft-item {
+  margin-bottom: 100px;
+  margin-top: 70px; /* adjust as needed */
 }

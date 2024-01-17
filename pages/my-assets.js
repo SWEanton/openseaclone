@@ -44,7 +44,7 @@ export default function Home() {
       <ConnectWallet />
       {address && (
         <button disabled={loading} className="button" onClick={validateAndMint}>
-          {loading ? "Loading..." : "Validate and mint!"}
+          {loading ? "Loading..." : "Burn NFT"}
         </button>
       )}
     </div>

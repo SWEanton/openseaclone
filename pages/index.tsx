@@ -28,13 +28,13 @@ function Home() {
   return (
     <div style={{ border: '4px solid black',  padding: '10px', width: '100%' }}>
       {nfts && nfts?.length > 0 && (
-        <div>
+        <div className="nft-list">
           {nfts.map((nft) => (
-            <div key={nft.metadata.id.toString()}>
+            <div key={nft.metadata.id.toString()} className="nft-item">
               <h1>{nft.metadata.name}</h1>
               <ThirdwebNftMedia metadata={nft.metadata} />
               <p>owned by {truncateAddress(nft.owner)} (logged in user) </p>
-              <button onClick={() => handleViewOnOpensea(nft)}>View on opensea</button>
+              <button onClick={() => handleViewOnOpensea(nft)} style={{ border: '3px solid black' }}>View on opensea</button>
             </div>
           ))}
         </div>

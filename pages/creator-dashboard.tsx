@@ -145,8 +145,8 @@ const Home: NextPage = () => {
           </div>
         </div>
       ) : (
-        <div>
-          <h1>Sign in to mint an NFT</h1>
+        <div style={{ textAlign: "center" }}>
+          <h1>Please Sign In Using Metamask </h1>
         </div>
       )}
     </div>

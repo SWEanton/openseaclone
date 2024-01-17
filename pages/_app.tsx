@@ -5,13 +5,14 @@ import { ConnectWallet } from "@thirdweb-dev/react";
 import { ThirdwebSDK } from '@thirdweb-dev/sdk';
 import { ACTIVE_CHAIN } from '../const/yourDetails';
 import { ethers } from 'ethers';
+import { AppType } from 'next/app';
 const sdk = new ThirdwebSDK ("mumbai", {
   clientId : "d435882a4a6a9827818d3671a163f6b3",
 });
 
 
 
-function MyApp({ Component, pageProps }) {
+const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <ThirdwebProvider activeChain={ACTIVE_CHAIN}
     authConfig={{ domain: "example.com", authUrl: "/api/auth" }}
@@ -22,7 +23,11 @@ function MyApp({ Component, pageProps }) {
         }),
       ]}
     
-    >
+    > <header className="header">
+    <h1>2024</h1>
+  </header>
+      
+     
  
       <div className="bakgrundsvideo">
       <video
@@ -37,7 +42,8 @@ function MyApp({ Component, pageProps }) {
       </div>
         <div className="relative z-10">
           <nav className="border-b p-6">
-            <p className="text-4xl font-bold"> NFT Marketplace </p>
+            <p className="text-5xl font-bold"> NFT World </p>
+            <p className="text-xl font-bold"> Mint, explore and burn NFTs </p>
             <div className="text-xl flex mt-4 justify-between">
               <div className="flex space-x-8">
                 <Link href="/" passHref>
@@ -58,7 +64,7 @@ function MyApp({ Component, pageProps }) {
           </nav> 
           <Component {...pageProps} />
         </div>
-
+        <footer className="footer"><h2>yoyo</h2></footer>
     </ThirdwebProvider>
   )
 }
