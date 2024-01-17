@@ -4,7 +4,7 @@ import { NFT_COLLECTION_CONTRACT_ADDRESS } from "../const/yourDetails";
 import { NFTCard } from "../components/NFTCard";
 
 const CollectionPage = () => {
-    const { contract } = useContract(NFT_COLLECTION_CONTRACT_ADDRESS);
+    const { contract } = useContract(process.env.NFT_COLLECTION_CONTRACT_ADDRESS);
 
     const { data: nfts } = useNFTs(contract);
 

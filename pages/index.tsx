@@ -1,46 +1,54 @@
 import { useEffect, useState } from 'react';
-import { useContract, ThirdwebNftMedia } from "@thirdweb-dev/react";
-import { useRouter } from 'next/router';
+import { useContract, ThirdwebNftMedia, ConnectWallet, useDirectListings, MediaRenderer } from "@thirdweb-dev/react";
 import React from 'react';
-function Home() {
-  const { contract } = useContract(
-    "0xd17D48b8F7B99e22e6ebE614bbF0e37c13a89391",
-    "NFTmint"
-  );
-  const [nfts, setNfts] = useState([]);
+import { NextPage } from "next";
+import Link from "next/link";
 
-  useEffect(() => {
-    if (contract) {
-      contract.erc721.getAll().then(setNfts);
-    }
-  }, [contract]);
-
-  const truncateAddress = (address) => {
-    return (
-      address.substring(0, 6) + "..." + address.substring(address.length - 4)
-    );
-  };
-
-  const handleViewOnOpensea = (nft) => {
-    window.open(`https://testnets.opensea.io/assets/${nft.metadata.address}/${nft.metadata.id}`);
-  };
+const Home: NextPage = () => {
+  const {contract} = useContract("0x30B71480E74081137bFCB9E47B75768FDE09f2e9", "NFTmarketplace")
+  const {data: directListings, isLoading, error} = useDirectListings(contract, {start: 0, count: 10 });
 
   return (
-    <div style={{ border: '4px solid black',  padding: '10px', width: '100%' }}>
-      {nfts && nfts?.length > 0 && (
-        <div className="nft-list">
-          {nfts.map((nft) => (
-            <div key={nft.metadata.id.toString()} className="nft-item">
-              <h1>{nft.metadata.name}</h1>
-              <ThirdwebNftMedia metadata={nft.metadata} />
-              <p>owned by {truncateAddress(nft.owner)} (logged in user) </p>
-              <button onClick={() => handleViewOnOpensea(nft)} style={{ border: '3px solid black' }}>View on opensea</button>
+    <main>
+      <div className="flexHeader">
+        <div>
+          <h1>
+            Hello and Welcome! To use this Dapp, please install metamask. You can find more information about it {" "}
+            <span>
+              <Link
+                href="https://support.metamask.io/hc/en-us/articles/360015489531-Getting-started-with-MetaMask"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                here.
+              </Link>
+            </span>
+          </h1>
+        </div>
+        <ConnectWallet className="my-custom-class" />
+      </div>
+
+      {isLoading && <div>Loading...</div>}
+      <div className="nftGrid">
+        {!isLoading &&
+          directListings &&
+          directListings.map((nft) => (
+            <div className="nftDrop" key={nft.id}>
+              <a href={`/assets/${nft.id}`}>
+                  
+                <MediaRenderer
+                  width="100%"
+                  className="images"
+                  src={nft.asset.image}
+                />
+                <p>#{nft.asset.name}</p>
+                <p> Price {nft.currencyValuePerToken.displayValue} Matic</p>
+              </a>
             </div>
           ))}
-        </div>
-      )}
-    </div>
+      </div>
+    </main>
   );
-}
+};
 
 export default Home;

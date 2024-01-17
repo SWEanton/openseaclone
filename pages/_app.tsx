@@ -1,5 +1,6 @@
 import '../styles/globals.css'
 import Link from 'next/link'
+import type { AppProps } from 'next/app'
 import { ThirdwebProvider, metamaskWallet, useContract } from "@thirdweb-dev/react";
 import { ConnectWallet } from "@thirdweb-dev/react";
 import { ThirdwebSDK } from '@thirdweb-dev/sdk';
@@ -12,9 +13,9 @@ const sdk = new ThirdwebSDK ("mumbai", {
 
 
 
-const MyApp: AppType = ({ Component, pageProps }) => {
+function MyApp({ Component, pageProps }: AppProps){
   return (
-    <ThirdwebProvider activeChain={ACTIVE_CHAIN}
+    <ThirdwebProvider activeChain='mumbai'
     authConfig={{ domain: "example.com", authUrl: "/api/auth" }}
     clientId="d435882a4a6a9827818d3671a163f6b3"
     supportedWallets={[
@@ -50,10 +51,10 @@ const MyApp: AppType = ({ Component, pageProps }) => {
                   My NFTs
                 </Link>
                 <Link href="/create-item" passHref>
-                  Signature Mint
+                  Marketplace
                 </Link>
                 <Link href="/my-assets" passHref>
-                  Burn NFTs
+                  My Listings
                 </Link>
                 <Link href="/creator-dashboard" passHref>
                   NFT Creator 
@@ -64,7 +65,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
           </nav> 
           <Component {...pageProps} />
         </div>
-        <footer className="footer"><h2>yoyo</h2></footer>
+        <footer className="footer"><h2></h2></footer>
     </ThirdwebProvider>
   )
 }

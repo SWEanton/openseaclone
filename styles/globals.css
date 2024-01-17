@@ -40,3 +40,45 @@ header {
   margin-bottom: 100px;
   margin-top: 70px; /* adjust as needed */
 }
+
+.nftGrid {
+  display: flex;
+  width: 70%;
+  margin: 20px auto;
+  justify-content: center;
+  grid-gap: 15px;
+  flex-wrap: wrap;
+}
+
+.nftDrop {
+  background: rgba(26, 25, 25, 0.238);
+  padding: 10px;
+  border-radius: 19px;
+  border: 1px solid rgba(68, 67, 67, 0.292);
+}
+
+.images {
+  text-align: center;
+
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: -18px;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+}
+
+.imagesListing {
+  width: 100%;
+}
+
+.demoButton{
+  background-color: rgb(178, 7, 221) !important;
+  color: white !important;
+  padding: 15px 35px;
+  cursor: pointer;
+  margin-top: 18px;
+  border-radius: 90px;
+  font-size: 19px;
+  border: none;
+}
