@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { IncomingForm } from "formidable";
 import { Engine } from "@thirdweb-dev/engine";
 import { ThirdwebStorage } from "@thirdweb-dev/storage";
-import { NFT_COLLECTION_CONTRACT_ADDRESS } from "../../const/yourDetails";
+import { NFT_COLLECTION_CONTRACT_ADDRESS } from "../../addresses";
 import fs from 'fs';
 
 export const config = {

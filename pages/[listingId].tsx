@@ -22,13 +22,9 @@ export default function NFT() {
 
   if (isLoading || !listingData) return <div>Loading ...</div>;
 
-  const listing = listingData[paramListingId]; // Access the first element directly
+  const listing = listingData[paramListingId]; 
   console.log(listing);
-  
-  if (!listing) {
-    return <div>Marketplace unavailable right now...</div>;
-  }
-  
+
   const buyoutListing = async () => {
     try {
       await contract?.buyoutListing(BigNumber.from(listing.values), 1);

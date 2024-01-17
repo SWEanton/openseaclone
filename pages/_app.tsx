@@ -4,7 +4,7 @@ import type { AppProps } from 'next/app'
 import { ThirdwebProvider, metamaskWallet, useContract } from "@thirdweb-dev/react";
 import { ConnectWallet } from "@thirdweb-dev/react";
 import { ThirdwebSDK } from '@thirdweb-dev/sdk';
-import { ACTIVE_CHAIN } from '../const/yourDetails';
+import { ACTIVE_CHAIN } from '../addresses';
 import { ethers } from 'ethers';
 import { AppType } from 'next/app';
 const sdk = new ThirdwebSDK ("mumbai", {
@@ -16,7 +16,6 @@ const sdk = new ThirdwebSDK ("mumbai", {
 function MyApp({ Component, pageProps }: AppProps){
   return (
     <ThirdwebProvider activeChain='mumbai'
-    authConfig={{ domain: "example.com", authUrl: "/api/auth" }}
     clientId="d435882a4a6a9827818d3671a163f6b3"
     supportedWallets={[
         metamaskWallet({
@@ -30,15 +29,15 @@ function MyApp({ Component, pageProps }: AppProps){
       
      
  
-      <div className="bakgrundsvideo">
-      <video
-  autoPlay
-  muted
-  loop
-  className="absolute z-0 w-full h-full object-cover opacity-90"
-  style={{ zIndex: 1 }}
-  src="/bakgrundvideo.mp4"
-/>
+  <div className="bakgrundsvideo">
+            <video
+              autoPlay
+              muted
+              loop
+              className="absolute z-0 w-full h-full object-cover opacity-90"
+              style={{ zIndex: 1 }}
+              src="/bakgrundvideo.mp4"
+            />
 
       </div>
         <div className="relative z-10">
@@ -70,6 +69,6 @@ function MyApp({ Component, pageProps }: AppProps){
   )
 }
 function Component() {
-  const { contract, isLoading } = useContract("0xd17D48b8F7B99e22e6ebE614bbF0e37c13a89391");
+  const { contract, isLoading } = useContract("0x30B71480E74081137bFCB9E47B75768FDE09f2e9");
 }
 export default MyApp

@@ -1,6 +1,6 @@
 import { useContract, useNFTs } from "@thirdweb-dev/react";
 import styles from "../styles/Home.module.css";
-import { NFT_COLLECTION_CONTRACT_ADDRESS } from "../const/yourDetails";
+import { NFT_COLLECTION_CONTRACT_ADDRESS } from "../addresses";
 import { NFTCard } from "../components/NFTCard";
 
 const CollectionPage = () => {

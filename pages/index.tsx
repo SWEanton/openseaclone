@@ -5,15 +5,16 @@ import { NextPage } from "next";
 import Link from "next/link";
 
 const Home: NextPage = () => {
-  const {contract} = useContract("0x30B71480E74081137bFCB9E47B75768FDE09f2e9", "NFTmarketplace")
-  const {data: directListings, isLoading, error} = useDirectListings(contract, {start: 0, count: 10 });
+  const {contract} = useContract("0x30B71480E74081137bFCB9E47B75768FDE09f2e9", "marketplace-v3")
+  const {data: directListings, isLoading, error, 
+  } = useDirectListings(contract , { start: 0, count: 10 });
 
   return (
     <main>
       <div className="flexHeader">
         <div>
           <h1>
-            Hello and Welcome! To use this Dapp, please install metamask. You can find more information about it {" "}
+            Install metamask {" "}
             <span>
               <Link
                 href="https://support.metamask.io/hc/en-us/articles/360015489531-Getting-started-with-MetaMask"
@@ -25,7 +26,7 @@ const Home: NextPage = () => {
             </span>
           </h1>
         </div>
-        <ConnectWallet className="my-custom-class" />
+     
       </div>
 
       {isLoading && <div>Loading...</div>}
